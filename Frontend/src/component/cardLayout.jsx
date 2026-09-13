@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import Card from './card'
-import { EmployeeContext } from '../context/employeeContext'
+import { EmployeeContext } from '../context/employeeContext.jsx'
 
 const CardLayout = () => {
 
