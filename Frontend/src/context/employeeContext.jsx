@@ -7,15 +7,17 @@ export const EmployeeProvider = ({ children }) => {
     const [employeeData, setEmployeeData] = useState([])
     const [editingId, setEditingId] = useState(null)
     const [isEditForm, setIsEditForm] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const getToday = () => new Date().toISOString().split('T')[0]
     const [curDate,setCurDate] = useState(getToday())
 
     
     const getEmployeeData = useCallback(async () => {
+        setIsLoading(true)
         try {
             const response = await getEmployee()
-            console.log(response)
+            // console.log(response)
 
             const employees = Array.isArray(response)
                 ? response
@@ -27,6 +29,8 @@ export const EmployeeProvider = ({ children }) => {
         } catch (error) {
             console.error(error)
             setEmployeeData([])
+        } finally {
+            setIsLoading(false)
         }
     }, [])
     
@@ -41,10 +45,10 @@ export const EmployeeProvider = ({ children }) => {
     
     const createEmployeeData = async (data) => {
         try {
-            const response = await createEmployee(data)
-            return response;
+            return await createEmployee(data)
         } catch (error) {
             console.error("Error in Creating employee:", error)
+            throw error
         }
     }
     
@@ -67,6 +71,7 @@ export const EmployeeProvider = ({ children }) => {
     
     const values = {
         employeeData,
+        isLoading,
         editingId,
         isEditForm,
         curDate,

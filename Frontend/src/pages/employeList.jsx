@@ -1,16 +1,18 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { deleteEmployee } from "../services/userAPI"
 import { EmployeeContext } from "../context/employeeContext"
 import EditEmployee from "../component/editEmployee"
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteForever } from "react-icons/md";
+import Loader from "../component/loader.jsx"
 
 
 const EmployeeList = () => {
 
-    const { getEmployeeData, employeeData, editingId, setEditingId, isEditForm, setIsEditForm } = useContext(EmployeeContext);
+    const { getEmployeeData, employeeData, editingId, setEditingId, isEditForm, setIsEditForm, isLoading } = useContext(EmployeeContext);
     const [employeeToDelete, setEmployeeToDelete] = useState(null)
     const employees = Array.isArray(employeeData) ? employeeData : []
+    const [message, setMessage] = useState(null)
 
     const handleDelete = async (id) => {
         try {
@@ -23,11 +25,34 @@ const EmployeeList = () => {
         }
     }
 
+    useEffect(() => {
+        getEmployeeData()
+    }, [getEmployeeData])
+
     const confirmDelete = async () => {
         if (!employeeToDelete) return
 
-        await handleDelete(employeeToDelete._id)
-        setEmployeeToDelete(null)
+        try {
+            await deleteEmployee(employeeToDelete._id)
+            await getEmployeeData()
+
+            setEmployeeToDelete(null)
+            setMessage({
+                type: "success",
+                text: "Worker deleted!!!",
+            })
+
+            setTimeout(() => setMessage(null), 3000)
+        } catch (error) {
+            console.error(error)
+
+            setMessage({
+                type: "error",
+                text: "Failed to delete worker.",
+            })
+
+            setTimeout(() => setMessage(null), 3000)
+        }
     }
 
     const handleStartEditing = (user) => {
@@ -35,12 +60,24 @@ const EmployeeList = () => {
         setIsEditForm(!isEditForm)
     }
 
-    useEffect(() => {
-        getEmployeeData()
-    }, [getEmployeeData])
+    if (isLoading) {
+        return <Loader message="Loading employees..." />
+    }
 
     return (
         <section className="mx-auto mb-8 max-w-7xl rounded-3xl bg-[#fffdf8]  md:p-4 sm:p-4">
+        { message && (
+            <div
+                role="status"
+                aria-live="polite"
+                className={`fixed right-5 top-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm rounded-xl px-5 py-4 font-bold shadow-2xl ${message.type === "success"
+                        ? "bg-[#d86609] text-[#222022]"
+                        : "bg-[#f5d7d2] text-[#a5382c]"
+                    }`}
+            >
+                {message.text}
+            </div>
+        )}
             <div className="mb-6 flex items-end justify-between px-4 pt-2 md:p-2 sm:p-4 gap-4">
                 <div className="md:text-left text-center">
                     <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8a8c0a]">

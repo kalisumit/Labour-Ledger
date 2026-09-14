@@ -3,13 +3,30 @@ import { Link } from 'react-router-dom'
 import { EmployeeContext } from '../context/employeeContext'
 import EmployeeList from './employeList'
 import CreateUser from './createUser'
+import Loader from "../component/loader.jsx"
 
 const Home = () => {
-  const { employeeData, getEmployeeData } = useContext(EmployeeContext)
-
+  const { employeeData, getEmployeeData, isLoading } = useContext(EmployeeContext)
+  
   useEffect(() => {
     getEmployeeData()
   }, [getEmployeeData])
+
+
+  if (isLoading) {
+    return <Loader message="Loading workforce data..." />
+  }
+
+  // if (isLoading) {
+  //   return (
+  //     <main className="flex min-h-screen items-center justify-center bg-[#f4f0e8]">
+  //       <div className="flex flex-col items-center gap-4">
+  //         <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#c3d809] border-t-[#222022]" />
+  //         <p className="font-bold text-[#68645c]">Loading workforce data...</p>
+  //       </div>
+  //     </main>
+  //   )
+  // }
 
   const employees = Array.isArray(employeeData) ? employeeData : []
   const salaries = employees.map((employee) => Number(employee.salary) || 0)
@@ -101,7 +118,7 @@ const Home = () => {
         </div>
       </section>
 
-      <EmployeeList />
+      {/* <EmployeeList /> */}
 
       <CreateUser />
     </main>
