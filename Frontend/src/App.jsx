@@ -25,7 +25,7 @@ function App() {
         <Route path='/attendance' element={<ProtectedRoute><Attendence /></ProtectedRoute>} />
         <Route path='/create' element={<ProtectedRoute><CreateUser /></ProtectedRoute>} />
         <Route path='/salary' element={<ProtectedRoute><Salary /></ProtectedRoute>} />
-          <Route path='/team' element={<ProtectedRoute><EmployeeList /></ProtectedRoute>}/>
+        <Route path='/team' element={<ProtectedRoute><EmployeeList /></ProtectedRoute>}/>
         <Route path="*" element={<Navigate to={localStorage.getItem('token') ? '/home' : '/login'} replace />} />
       </Routes>
       </div>
